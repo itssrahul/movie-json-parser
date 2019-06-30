@@ -28,9 +28,30 @@ public class Main {
         System.out.println("All movies categories are : "+ movieMap.entrySet().toString());
 
         System.out.println("Writing output Json results...");
-        mainObj.createMoviesOutputJson(movieMap);
+        //mainObj.createMoviesOutputJson(movieMap);
+        List<FskCategory> fskCategoryList = mainObj.createCategorisedMoviesList(movieMap);
+        mainObj.writeJsonToFile(fskCategoryList);
         System.out.println("Successfully created result json at - ./result/result.json");
 
+    }
+
+    private void writeJsonToFile(List<FskCategory> fskCategoryList) {
+        try (FileWriter file = new FileWriter("./result/result.json")) {
+
+            file.write(new Gson().toJson(fskCategoryList));
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<FskCategory> createCategorisedMoviesList(Map<String, ArrayList<Movie>> movieMap) {
+        List<FskCategory> fskCategoryList = new ArrayList<>();
+        movieMap.forEach((k,v) -> {
+            fskCategoryList.add(new FskCategory(k, movieMap.get(k).size(), movieMap.get(k)));
+        });
+        return fskCategoryList;
     }
 
     private void createMoviesOutputJson(Map<String, ArrayList<Movie>> movieMap) throws IOException {
